@@ -1,0 +1,155 @@
+--// Fake Chat Simulator GUI
+--// Local visual chat simulator for your own Roblox experience
+
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+--// ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "FakeChatGUI"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+--// Main frame
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.new(0, 280, 0, 330)
+main.Position = UDim2.new(0.5, -140, 0.5, -165)
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+main.BorderSizePixel = 0
+main.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = main
+
+--// Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "💬 Fake Chat"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 17
+title.Font = Enum.Font.GothamBold
+title.Parent = main
+
+--// Chat display
+local chatBox = Instance.new("ScrollingFrame")
+chatBox.Name = "ChatBox"
+chatBox.Size = UDim2.new(1, -16, 0, 180)
+chatBox.Position = UDim2.new(0, 8, 0, 45)
+chatBox.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
+chatBox.BorderSizePixel = 0
+chatBox.ScrollBarThickness = 4
+chatBox.AutomaticCanvasSize = Enum.AutomaticSize.Y
+chatBox.CanvasSize = UDim2.new(0, 0, 0, 0)
+chatBox.Parent = main
+
+local chatCorner = Instance.new("UICorner")
+chatCorner.CornerRadius = UDim.new(0, 8)
+chatCorner.Parent = chatBox
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 4)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = chatBox
+
+--// Username box
+local usernameBox = Instance.new("TextBox")
+usernameBox.Size = UDim2.new(1, -16, 0, 32)
+usernameBox.Position = UDim2.new(0, 8, 0, 235)
+usernameBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+usernameBox.BorderSizePixel = 0
+usernameBox.PlaceholderText = "Enter username..."
+usernameBox.Text = ""
+usernameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+usernameBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+usernameBox.TextSize = 13
+usernameBox.Font = Enum.Font.Gotham
+usernameBox.Parent = main
+
+local userCorner = Instance.new("UICorner")
+userCorner.CornerRadius = UDim.new(0, 7)
+userCorner.Parent = usernameBox
+
+--// Message box
+local messageBox = Instance.new("TextBox")
+messageBox.Size = UDim2.new(1, -85, 0, 32)
+messageBox.Position = UDim2.new(0, 8, 0, 275)
+messageBox.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+messageBox.BorderSizePixel = 0
+messageBox.PlaceholderText = "Type message..."
+messageBox.Text = ""
+messageBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+messageBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+messageBox.TextSize = 13
+messageBox.Font = Enum.Font.Gotham
+messageBox.ClearTextOnFocus = false
+messageBox.Parent = main
+
+local msgCorner = Instance.new("UICorner")
+msgCorner.CornerRadius = UDim.new(0, 7)
+msgCorner.Parent = messageBox
+
+--// Send button
+local sendButton = Instance.new("TextButton")
+sendButton.Size = UDim2.new(0, 70, 0, 32)
+sendButton.Position = UDim2.new(1, -78, 0, 275)
+sendButton.BackgroundColor3 = Color3.fromRGB(70, 120, 255)
+sendButton.BorderSizePixel = 0
+sendButton.Text = "SEND"
+sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+sendButton.TextSize = 12
+sendButton.Font = Enum.Font.GothamBold
+sendButton.Parent = main
+
+local sendCorner = Instance.new("UICorner")
+sendCorner.CornerRadius = UDim.new(0, 7)
+sendCorner.Parent = sendButton
+
+--// Add fake message
+local function addFakeMessage(username, message)
+	if username == "" or message == "" then
+		return
+	end
+
+	local messageFrame = Instance.new("Frame")
+	messageFrame.Size = UDim2.new(1, -8, 0, 35)
+	messageFrame.BackgroundTransparency = 1
+	messageFrame.Parent = chatBox
+
+	local text = Instance.new("TextLabel")
+	text.Size = UDim2.new(1, -8, 1, 0)
+	text.Position = UDim2.new(0, 4, 0, 0)
+	text.BackgroundTransparency = 1
+	text.Text = username .. ": " .. message
+	text.TextColor3 = Color3.fromRGB(235, 235, 235)
+	text.TextSize = 13
+	text.Font = Enum.Font.Gotham
+	text.TextXAlignment = Enum.TextXAlignment.Left
+	text.TextWrapped = true
+	text.Parent = messageFrame
+
+	task.wait()
+
+	chatBox.CanvasPosition = Vector2.new(
+		0,
+		math.max(0, chatBox.AbsoluteCanvasSize.Y)
+	)
+end
+
+--// Send button
+sendButton.MouseButton1Click:Connect(function()
+	addFakeMessage(usernameBox.Text, messageBox.Text)
+	messageBox.Text = ""
+end)
+
+--// Enter key sends message
+messageBox.FocusLost:Connect(function(enterPressed)
+	if enterPressed then
+		addFakeMessage(usernameBox.Text, messageBox.Text)
+		messageBox.Text = ""
+	end
+end)
